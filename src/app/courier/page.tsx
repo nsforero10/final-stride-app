@@ -134,7 +134,7 @@ export default function Courier() {
     useEffect(() => {
         if (userData) {
             getUserById(userData.uid).then((res) => {
-                if (!user?.roles?.includes(Roles.Courier)) {
+                if (!res?.roles?.includes(Roles.Courier)) {
                     router.push("/login")
                 }
                 setUser(res)
