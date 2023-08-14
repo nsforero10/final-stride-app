@@ -1,8 +1,93 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This project is made [Next.js](https://nextjs.org/) with 💗 by [Nico](https://github.com/nsforero10)!
 
-## Getting Started
+# FinalStride: Last Mile Logistics Solution - Technical test for KikiLogistics
 
-First, run the development server:
+## Problem to solve:
+
+The last mile delivery problem has long been a hindrance to the effectiveness of the supply chain in the field of logistics. The difficulty is in effectively bridging the distance between distribution facilities and the front doors of end users. This final leg is a sensitive operation vulnerable to inefficiencies and client discontent due to factors including road congestion, delivery route optimization, package security, and timely communications. In order to effectively address this complex issue, a solution must organize smooth collaboration between numerous stakeholders, rely on real-time data for route optimization, guarantee secure and precise deliveries, and keep consumers updated along the process.
+
+## Introducing FinalStride:
+
+FinalStride is an innovative initiative that transforms last mile delivery in the logistics sector. It simplifies and optimizes the complexity of final mile logistics by seamlessly integrating cutting-edge technologies, intuitive interfaces, and strategic algorithms. FinalStride improves productivity, accuracy, and customer satisfaction in the critical last leg of product delivery.
+
+## Features:
+
+### User Authentication and Authorization:
+
+Implement user registration, login, and role-based access control using the Role-Based Access Control (RBAC) design pattern. Admins have access to all features, managers can manage shipments, and couriers can view and update shipment status.
+
+```typescript
+enum Roles {
+    Admin = "ADMIN",
+    Manager = "MANAGER",
+    Courier = "COURIER",
+}
+
+type User = {
+    id?: string
+    uid: string
+    name: string
+    email: string
+    roles: Roles[]
+    photoURL: string
+    location: { lat: number; lng: number }
+}
+```
+
+### Shipment Management:
+
+-   Add new shipments with sender and receiver information, package details, and delivery dates.
+-   Track shipment status and update it as it progresses through different stages (Created, PickedUp, OnTheWay, Arriving, Arrived, Delivered).
+-   Implement the State Pattern to manage the different states of a shipment.
+
+```typescript
+enum Status {
+    Created = "CRD",
+    PickedUp = "PKU",
+    OnTheWay = "OTW",
+    Arriving = "ARG",
+    Arrived = "AVD",
+    Delivered = "DLD",
+}
+
+type Item = {
+    id?: string
+    name: string
+    quantity: number
+}
+
+type Order = {
+    id?: string
+    orderNumber: number
+    courierId?: string
+    clientName: string
+    location: { address: string; lat: number; lng: number }
+    currentStatus: Status
+    items: {
+        id: string
+        name: string
+        quantity: number
+    }[]
+    statusHistory: {
+        status: Status
+        date: Date
+    }[]
+}
+```
+
+## Runing project
+
+This is a fullstack project made in Nextjs, with a RestAPI in `src/app/api` and Web React App on `src/app`. Both using [NextRoutes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
+
+First, install dependecies
+
+```bash
+npm install
+# or
+yarn
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -12,23 +97,26 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000/login](http://localhost:3000/login) and login with this google account to view multiple orders already created
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+email: finalstrideapp@gmail.com
+password: finalstrideapp15
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Then you will be redirected to [http://localhost:3000/](http://localhost:3000/), this is the Manager View, where you can:
 
-## Learn More
+-   Create new orders
+-   Assign orders to different Couriers
+-   Check the current state of the orders
 
-To learn more about Next.js, take a look at the following resources:
+On the top right corner, theres two buttons, one for logout, and the other will take you to [http://localhost:3000/courier](http://localhost:3000/courier), here you can:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+-   Check orders assigned to you
+-   Update orders status
+-   Get Directions to go to a specific order
+-   Get relevant info about each orders (items, status history)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Deploy
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) so you can navigate to [Final Stride](https://final-stride.vercel.app/) to see a live demo.
