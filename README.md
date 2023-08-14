@@ -112,11 +112,19 @@ Then you will be redirected to [http://localhost:3000/](http://localhost:3000/),
 
 On the top right corner, theres two buttons, one for logout, and the other will take you to [http://localhost:3000/courier](http://localhost:3000/courier), here you can:
 
+_This view is mobile first and thought to be used on more handy devices due this could be use on the road (driving, bycicle, motocycle, etc)_
+
 -   Check orders assigned to you
 -   Update orders status
 -   Get Directions to go to a specific order
 -   Get relevant info about each orders (items, status history)
 
-## Deploy
+## Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) so you can navigate to [Final Stride](https://final-stride.vercel.app/) to see a live demo.
+-   [Nextjs](https://nextjs.org/)
+-   Authentication with [Firebase Auth](https://firebase.google.com/products/auth/)
+-   NoSQL database with [Firebase Firestore](https://firebase.google.com/products/firestore/)
+-   Map provided by [Mapbox](https://www.mapbox.com/)
+-   Design library [Ant Design](https://ant.design/)
+-   Iconography by [FontAwesome](https://fontawesome.com/)
+-   Deplyed in [Vercel](https://vercel.com/) access here [Final Stride](https://final-stride.vercel.app/)
