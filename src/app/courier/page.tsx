@@ -4,18 +4,20 @@ import { useEffect, useRef, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/firebase/clientConfig"
 import { getUserById } from "../_server/userApi"
-import { Order, Status, User } from "@/models/types"
+import { Order, Roles, Status, User } from "@/models/types"
 import { getOrdersByCourierId, updateOrder } from "../_server/ordersApi"
 import { getColor } from "../utils/colors"
-import { Button, Divider, List, Modal, Select, Steps } from "antd"
+import { Button, Divider, List, Modal, Select, Steps, Tooltip } from "antd"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
     faChevronLeft,
     faChevronRight,
+    faDoorOpen,
     faInfoCircle,
-    faUser,
 } from "@fortawesome/free-solid-svg-icons"
 import moment from "moment"
+import { logOut } from "../utils/auth"
+import { useRouter } from "next/navigation"
 
 var mapboxgl = require("mapbox-gl/dist/mapbox-gl.js")
 
@@ -23,6 +25,7 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 export default function Courier() {
     const map = useRef<mapboxgl.Map>()
+    const router = useRouter()
     const [mapRendered, setMapRendered] = useState(false)
     const [userData] = useAuthState(auth)
     const [orders, setOrders] = useState<Order[]>([])
@@ -109,7 +112,7 @@ export default function Courier() {
 
     useEffect(() => {
         if (user) {
-            renderOrders()
+            if (orders.length > 0) renderOrders()
             const el = document.createElement("div")
             el
 
@@ -131,6 +134,9 @@ export default function Courier() {
     useEffect(() => {
         if (userData) {
             getUserById(userData.uid).then((res) => {
+                if (!user?.roles?.includes(Roles.Courier)) {
+                    router.push("/login")
+                }
                 setUser(res)
                 getOrdersByCourierId(userData.uid).then((orders) => {
                     setOrders(orders)
@@ -158,13 +164,16 @@ export default function Courier() {
                 className="w-full h-screen position absolute top-0 left-0 z-0"
             />
             <section className="absolute top-0 right-0 m-4">
-                <Button
-                    onClick={() => {
-                        auth.signOut()
-                    }}
-                >
-                    <FontAwesomeIcon icon={faUser} />
-                </Button>
+                <Tooltip placement="right" title="Log out">
+                    <Button
+                        type="default"
+                        onClick={() => {
+                            logOut(() => router.push("/"))
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faDoorOpen} />
+                    </Button>
+                </Tooltip>
             </section>
             {orders.length > 0 && (
                 <>

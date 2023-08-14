@@ -1,9 +1,9 @@
 "use client"
-/* global google */
-import { Item, Order, Status, User } from "@/models/types"
+import "mapbox-gl/dist/mapbox-gl.css"
 import {
-    faBars,
+    faDoorOpen,
     faMinus,
+    faMotorcycle,
     faPlus,
     faTrash,
 } from "@fortawesome/free-solid-svg-icons"
@@ -17,14 +17,19 @@ import {
     Select,
     Table,
     Tag,
+    Tooltip,
 } from "antd"
 import React, { useEffect, useRef, useState } from "react"
 import { getItems } from "./_server/itemsApi"
 import { createOrder, getOrders, updateOrder } from "./_server/ordersApi"
-import { getUserByRole } from "./_server/userApi"
+import { getUserById, getUserByRole } from "./_server/userApi"
 import { getStatusColor } from "./utils/colors"
 import { getColor } from "./utils/colors"
-import "mapbox-gl/dist/mapbox-gl.css"
+import { Item, Order, Roles, Status, User } from "@/models/types"
+import { useRouter } from "next/navigation"
+import { logOut } from "./utils/auth"
+import { auth } from "@/firebase/clientConfig"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 var mapboxgl = require("mapbox-gl/dist/mapbox-gl.js")
 
@@ -32,6 +37,8 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 export default function Manager() {
     const map = useRef<mapboxgl.Map>()
+    const router = useRouter()
+    const [userData] = useAuthState(auth)
     const [mapRendered, setMapRendered] = useState(false)
     const [showNewOrderModal, setShowNewOrderModal] = useState(false)
     const [addressOptions, setAddressOptions] = useState<any[]>([])
@@ -47,22 +54,6 @@ export default function Manager() {
         items: [],
         statusHistory: [],
     })
-
-    const handleUpdateCourier = (courierId: string, key: React.Key) => {
-        const order = orders.find((order) => order.id === key)
-        if (map.current) {
-            if (map.current.getSource(`line-${key}`) !== undefined) {
-                map.current.removeLayer(`line-${key}`)
-                map.current.removeSource(`line-${key}`)
-            }
-        }
-        if (!order) return
-        order.courierId = courierId
-        updateOrder(order).then((res) => {
-            if (res.status !== 200) return
-            fetchOrders()
-        })
-    }
 
     const columns = [
         {
@@ -116,6 +107,22 @@ export default function Manager() {
         },
     ]
 
+    const handleUpdateCourier = (courierId: string, key: React.Key) => {
+        const order = orders.find((order) => order.id === key)
+        if (map.current) {
+            if (map.current.getSource(`line-${key}`) !== undefined) {
+                map.current.removeLayer(`line-${key}`)
+                map.current.removeSource(`line-${key}`)
+            }
+        }
+        if (!order) return
+        order.courierId = courierId
+        updateOrder(order).then((res) => {
+            if (res.status !== 200) return
+            fetchOrders()
+        })
+    }
+
     const handleCreateNewOrder = () => {
         createOrder({
             ...newOrder,
@@ -155,6 +162,7 @@ export default function Manager() {
         fetchItems()
         fetchCouriers()
         fetchOrders()
+
         if (mapRendered) return
         map.current = new mapboxgl.Map({
             container: "mapContainer",
@@ -179,7 +187,7 @@ export default function Manager() {
         setCouriers(couriers)
     }
 
-    useEffect(() => {
+    const renderOrders = () => {
         for (const order of orders) {
             const el = document.createElement("div")
             const { colorClass, color } = getColor(order.orderNumber)
@@ -238,14 +246,11 @@ export default function Manager() {
                 },
             })
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [orders])
+    }
 
-    useEffect(() => {
+    const renderCouriers = () => {
         for (const courier of couriers) {
             const el = document.createElement("div")
-            el
-
             var svg = document.createElement("svg")
             const html = `<svg width="30" height="29" viewBox="0 0 48 39" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21 2.4C20.0025 2.4 19.2 3.2025 19.2 4.2C19.2 5.1975 20.0025 6 21 6H25.3275L26.5575 8.2725L19.2 14.4L15.8025 11.0025C14.9025 10.1025 13.68 9.6 12.405 9.6H4.8C3.4725 9.6 2.4 10.6725 2.4 12V14.4H9.6C16.23 14.4 21.6 19.77 21.6 26.4C21.6 27.225 21.5175 28.0275 21.36 28.8H26.64C26.4825 28.0275 26.4 27.225 26.4 26.4C26.4 22.485 28.275 19.005 31.1775 16.815L32.3325 18.96C30.18 20.7225 28.8 23.4 28.8 26.4C28.8 31.7025 33.0975 36 38.4 36C43.7025 36 48 31.7025 48 26.4C48 21.0975 43.7025 16.8 38.4 16.8C37.3875 16.8 36.4125 16.9575 35.4975 17.25L31.365 9.6H36C37.3275 9.6 38.4 8.5275 38.4 7.2V4.8C38.4 3.4725 37.3275 2.4 36 2.4H34.47C33.9075 2.4 33.3675 2.595 32.9325 2.955L29.3775 5.9175L28.3275 3.9675C27.8025 3 26.79 2.3925 25.6875 2.3925H21V2.4ZM34.7025 23.34L36.8175 27.255C37.29 28.1325 38.385 28.455 39.255 27.9825C40.125 27.51 40.455 26.415 39.9825 25.545L37.8675 21.63C38.04 21.6075 38.22 21.6 38.4 21.6C41.0475 21.6 43.2 23.7525 43.2 26.4C43.2 29.0475 41.0475 31.2 38.4 31.2C35.7525 31.2 33.6 29.0475 33.6 26.4C33.6 25.2375 34.0125 24.1725 34.7025 23.34ZM14.0475 28.2C13.335 29.9625 11.61 31.2 9.6 31.2C6.9525 31.2 4.8 29.0475 4.8 26.4C4.8 23.7525 6.9525 21.6 9.6 21.6C11.6175 21.6 13.3425 22.8375 14.0475 24.6H19.0275C18.1875 20.16 14.2875 16.8 9.6 16.8C4.2975 16.8 0 21.0975 0 26.4C0 31.7025 4.2975 36 9.6 36C14.2875 36 18.1875 32.64 19.035 28.2H14.0475ZM9.6 28.8C10.2365 28.8 10.847 28.5471 11.2971 28.0971C11.7471 27.647 12 27.0365 12 26.4C12 25.7635 11.7471 25.153 11.2971 24.7029C10.847 24.2529 10.2365 24 9.6 24C8.96348 24 8.35303 24.2529 7.90294 24.7029C7.45286 25.153 7.2 25.7635 7.2 26.4C7.2 27.0365 7.45286 27.647 7.90294 28.0971C8.35303 28.5471 8.96348 28.8 9.6 28.8Z" fill="#41FFF4"/>
@@ -258,11 +263,30 @@ export default function Manager() {
                 .setLngLat([courier.location.lng, courier.location.lat])
                 .addTo(map.current)
         }
+    }
+    useEffect(() => {
+        renderOrders()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orders])
+
+    useEffect(() => {
+        renderCouriers()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [couriers])
 
     useEffect(() => {
-        fetchInitData()
+        if (userData) {
+            getUserById(userData.uid).then((res) => {
+                if (!res.roles?.includes(Roles.Courier)) {
+                    router.push("/login")
+                }
+            })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userData])
 
+    useEffect(() => {
+        fetchInitData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
@@ -286,9 +310,27 @@ export default function Manager() {
                         }
                     })}
                 />
-                <Button type="default">
-                    <FontAwesomeIcon icon={faBars} />
-                </Button>
+                <div className="flex flex-col">
+                    <Tooltip placement="left" title="Go to courier page">
+                        <Button
+                            className="mb-4"
+                            type="default"
+                            onClick={() => router.push("/courier")}
+                        >
+                            <FontAwesomeIcon icon={faMotorcycle} />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip placement="right" title="Log out">
+                        <Button
+                            type="default"
+                            onClick={() => {
+                                logOut(() => router.push("/"))
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faDoorOpen} />
+                        </Button>
+                    </Tooltip>
+                </div>
             </div>
             <FloatButton
                 onClick={() => setShowNewOrderModal(true)}

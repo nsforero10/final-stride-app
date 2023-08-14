@@ -1,7 +1,7 @@
 export enum Roles {
     Admin = "ADMIN",
     Manager = "MANAGER",
-    Courer = "COURIER",
+    Courier = "COURIER",
 }
 export enum Status {
     Created = "CRD",
