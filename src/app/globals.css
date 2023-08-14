@@ -2,26 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.mapboxgl-ctrl-attrib {
+    display: none;
+}
+.mapboxgl-ctrl-logo {
+    display: none !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.color-1 {
+    background-color: #05262a;
+    color: #6ff0bb;
+    border-color: #6ff0bb;
 }
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.color-2 {
+    background-color: #1d0039;
+    color: #af44ff;
+    border-color: #af44ff;
+}
+.color-3 {
+    background-color: #060a24;
+    color: #7c00ff;
+    border-color: #7c00ff;
+}
+.color-4 {
+    background-color: #270028;
+    color: #ff5441;
+    border-color: #ff5441;
+}
+.color-5 {
+    background-color: #30002b;
+    color: #e000c0;
+    border-color: #e000c0;
+}
+.color-6 {
+    background-color: #220b02;
+    color: #f78200;
+    border-color: #f78200;
+}
+.color-7 {
+    background-color: #05262a;
+    color: #00c804;
+    border-color: #00c804;
+}
+.color-8 {
+    background-color: #140000;
+    color: #db0c0c;
+    border-color: #db0c0c;
+}
+.color-9 {
+    background-color: #273140;
+    color: #a5fcec;
+    border-color: #a5fcec;
 }

@@ -23,7 +23,14 @@ export async function getUserById(userId: string) {
     const response = await fetch(`/api/users/${userId}`, {
         method: "GET",
     })
-    return response
+    return (await response.json()) as User
+}
+
+export async function getUserByRole(role: string) {
+    const response = await fetch(`/api/users?role=${role}`, {
+        method: "GET",
+    })
+    return (await response.json()) as User[]
 }
 
 export async function signOutServer() {

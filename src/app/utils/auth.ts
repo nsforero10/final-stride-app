@@ -15,10 +15,11 @@ export async function logInWithGoogle(callback: () => void) {
 export async function signUpWithGoogle(callback: () => void) {
     const userCredential = await signInWithPopup(auth, provider)
     const newUser = {
-        id: userCredential.user.uid,
+        uid: userCredential.user.uid,
         name: userCredential.user.displayName,
         email: userCredential.user.email,
         photoURL: userCredential.user.photoURL,
+        roles: ["COURIER"],
     } as User
 
     await createUser(newUser)

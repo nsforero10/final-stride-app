@@ -13,30 +13,32 @@ export enum Status {
 }
 
 export type User = {
-    id: string
+    id?: string
+    uid: string
     name: string
     email: string
     roles: Roles[]
     photoURL: string
+    location: { lat: number; lng: number }
 }
 
 export type Item = {
-    id: string
+    id?: string
     name: string
     quantity: number
 }
 
 export type Order = {
-    id: string
+    id?: string
     orderNumber: number
-    courerId: string
+    courierId?: string
     clientName: string
     location: { address: string; lat: number; lng: number }
     currentStatus: Status
     items: {
-        itemId: string
-        itemName: string
-        amount: number
+        id: string
+        name: string
+        quantity: number
     }[]
     statusHistory: {
         status: Status

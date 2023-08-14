@@ -19,7 +19,7 @@ export async function GET(
 ) {
     let user = null
     try {
-        const q = query(usersRef, where("id", "==", params.id))
+        const q = query(usersRef, where("uid", "==", params.id))
         const querySnapshot = await getDocs(q)
         user = querySnapshot.docs[0].data()
     } catch (error: any) {
